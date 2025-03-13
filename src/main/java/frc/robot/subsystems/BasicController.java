@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class BasicController extends AbstractController {
 
   // Single-motor mechanism....
-  public  MotorController motor = null;
+  public  SparkMax motor = null;
 
 
   /** Creates a new DriveSubsystem. */
