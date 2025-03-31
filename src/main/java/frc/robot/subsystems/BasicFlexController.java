@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 
@@ -26,6 +27,11 @@ public class BasicFlexController extends AbstractController {
 
   @Override
   public void periodic() {
+  }
+
+  @Override
+  public RelativeEncoder getEncoder() {
+    return motor.getEncoder();
   }
 
   /**

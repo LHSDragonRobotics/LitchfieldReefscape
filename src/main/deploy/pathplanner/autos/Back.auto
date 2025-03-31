@@ -5,21 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "back"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L0"
+            "pathName": "BACK"
           }
         }
       ]

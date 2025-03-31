@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -29,6 +30,11 @@ public class BasicController extends AbstractController {
 
   @Override
   public void periodic() {
+  }
+
+  @Override
+  public RelativeEncoder getEncoder() {
+    return motor.getEncoder();
   }
 
   /**

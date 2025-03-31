@@ -117,6 +117,24 @@ public class RobotDrive extends Command {
             rotFeeder -= (float) xbox2.getRightY();
         }
 
+        float feederAngle = (float) RobotContainer.rotFeeder.getEncoder().getPosition();
+
+        float appliedPower = (0-feederAngle) / 15f;
+        boolean directionFlag= false;
+        if (appliedPower > 1 ) {
+            appliedPower = ((-230)-feederAngle) / 15f;
+            directionFlag = true;
+        }
+
+        if (appliedPower < 0.8f ) {
+            if (xbox2.getLeftStickButton()) {
+                RobotContainer.rotFeeder.getEncoder().setPosition(-5);
+            }
+            if ((rotFeeder > 0 && !directionFlag) || (rotFeeder < 0 && directionFlag)) {
+                rotFeeder = (appliedPower);
+            }
+        }
+
         RobotContainer.rotFeeder.go(rotFeeder);
 
 
@@ -135,6 +153,7 @@ public class RobotDrive extends Command {
             rotBall = Math.max(0, rotBall);
         }
 
+
         SmartDashboard.putNumber("rotBall", ballPosition);
         SmartDashboard.putNumber("rotBallLimit", rotBallLimit);
         RobotContainer.rotBall.go(rotBall);
@@ -145,6 +164,9 @@ public class RobotDrive extends Command {
         }
         if (Math.abs(xbox2.getLeftTriggerAxis()) > .1) {
             feeder -= xbox2.getLeftTriggerAxis();
+        }
+        if (!RobotContainer.limit1.get()) {
+            feeder = Math.min(0,feeder);
         }
         feeder /= 3;
         RobotContainer.feeder.go(feeder);

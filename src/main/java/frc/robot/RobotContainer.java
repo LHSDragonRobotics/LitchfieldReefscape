@@ -14,9 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
@@ -25,15 +23,14 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.ArmCommand;
 //import frc.robot.commands.ArmTeleCommand;
 import frc.robot.commands.BasicCommand;
-import frc.robot.commands.DualMotorCommand;
-import frc.robot.commands.LimitCommand;
 import frc.robot.commands.RobotDrive;
-import frc.robot.commands.SuckerCommand;
 import frc.robot.commands.autocmd.AutoArmCommand;
+import frc.robot.commands.autocmd.EncoderPositionCommand;
+import frc.robot.commands.autocmd.FeederCommand;
+import frc.robot.commands.autocmd.TimedCommand;
 import frc.robot.subsystems.BasicController;
 import frc.robot.subsystems.BasicFlexController;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.DualMotorController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -46,7 +43,6 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.revrobotics.ColorSensorV3;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 
@@ -73,6 +69,7 @@ public class RobotContainer {
 //    public static final PowerDistribution power = new PowerDistribution()
 
     public static final DigitalInput limit0 = new DigitalInput(0);
+    public static final DigitalInput limit1 = new DigitalInput(1);
     // public static final DigitalInput limit1 = new DigitalInput(1);
 
     SendableChooser<String> autoSelect = new SendableChooser<>();
@@ -91,9 +88,17 @@ public class RobotContainer {
      */
     public RobotContainer() {
 
-         NamedCommands.registerCommand("L0", new AutoArmCommand(arm, ArmCommand.Level.BOTTOM)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
+        NamedCommands.registerCommand("L0", new AutoArmCommand(arm, ArmCommand.Level.BOTTOM)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
         NamedCommands.registerCommand("L1", new AutoArmCommand(arm, ArmCommand.Level.L1)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
         NamedCommands.registerCommand("L2", new AutoArmCommand(arm, ArmCommand.Level.L2)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
+        NamedCommands.registerCommand("feed", new FeederCommand(feeder, .5f)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
+        NamedCommands.registerCommand("backFeed", new TimedCommand(feeder,1.5f, -.5f)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
+        NamedCommands.registerCommand("rotFeed", new EncoderPositionCommand(rotFeeder,-40)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
+        NamedCommands.registerCommand("rotL1", new EncoderPositionCommand(rotFeeder,-220)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
+        NamedCommands.registerCommand("rotDescore", new EncoderPositionCommand(rotFeeder,-180
+
+
+        )/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
         // NamedCommands.registerCommand("intake", new IntakeCommand()/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
         // NamedCommands.registerCommand("backfeed", new IntakeCommand(.25,-.3)/*.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)*/);
         // First option is dropdown Name, 2nd is actual name in file!
@@ -111,16 +116,12 @@ public class RobotContainer {
             autoSelect.addOption(fileName.substring(0,dotIndex),fileName.substring(0,dotIndex));
         }
 
-        CameraServer.startAutomaticCapture();
-
 
         SmartDashboard.putString("Auto Selector", "path");
         SmartDashboard.putBoolean("SwapSide", false);
         SmartDashboard.putBoolean("isAuto", DriverStation.isAutonomous());
         SmartDashboard.putBoolean("isTele", !DriverStation.isTeleopEnabled());
 
-        // arm.setDefaultCommand(new ArmTeleCommand());
-        //claw.setDefaultCommand(new BasicCommand(claw, .1));
         // Configure the button bindings
         SmartDashboard.putData(autoSelect);
         configureButtonBindings();

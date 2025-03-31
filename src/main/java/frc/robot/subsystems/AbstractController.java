@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -11,4 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class AbstractController extends SubsystemBase {
   public abstract void go(double power);
+
+  public RelativeEncoder getEncoder() {
+    return null;
+  }
 }
